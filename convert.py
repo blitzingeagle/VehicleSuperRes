@@ -41,16 +41,16 @@ model = nn.Sequential(
 
 # Time logging functions
 def tic():
-    global start_time
+    global args, start_time
     if args.verbose: start_time = time()
 
 def toc(log):
-    global start_time
+    global args, start_time
     if args.verbose: print(log.format(time() - start_time))
 
 
-# Main
-if __name__ == "__main__":
+def main():
+    global args
     args = parser.parse_args()
 
     # Load weights
@@ -70,13 +70,15 @@ if __name__ == "__main__":
     with torch.no_grad():
         for idx, x in enumerate(dataset_loader):
             filepath = dataset.samples[idx][0].replace(args.i, args.o)
-            if args.ext is not "(keep)": filepath = splitext(filepath)[0] + ("." if args.ext[0] != "." else "") + args.ext
+            if args.ext is not "(keep)": filepath = splitext(filepath)[0] + (
+                "." if args.ext[0] != "." else "") + args.ext
             directory = dirname(filepath)
 
             tic()
             input = x[0].cuda()
             output = model(input)
-            print("{}:\t{} {} --> {} {}".format(idx, dataset.samples[idx][0], tuple(input.shape), filepath, tuple(output.shape)))
+            print("{}:\t{} {} --> {} {}".format(idx, dataset.samples[idx][0], tuple(input.shape), filepath,
+                                                tuple(output.shape)))
             toc("Conversion time: {:06f} seconds.")
 
             tic()
@@ -84,6 +86,6 @@ if __name__ == "__main__":
             utils.save_image(input, filepath)
             toc("Saved image: {:06f} seconds.")
 
-
-
-
+# Main
+if __name__ == "__main__":
+    main()
