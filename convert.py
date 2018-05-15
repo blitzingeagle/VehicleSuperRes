@@ -11,11 +11,21 @@ from time import time
 
 # CLI parser
 parser = argparse.ArgumentParser(description="Vehicle Super Resolution Converter")
-parser.add_argument("-i", type=str, default="./images", metavar="I", help="Input image batch directory (default: ./images)")
-parser.add_argument("-o", type=str, default="./output", metavar="O", help="Output image directory (default: ./output)")
-parser.add_argument("-w", type=str, default="weights-beta.pth", metavar="W", help="Path to weights file (default: weights-beta.pth)")
-parser.add_argument("--ext", type=str, default="(keep)", metavar="ext", help="File extension for output (default: <uses the same extension as input>)")
-parser.add_argument("-v", "--verbose", action="store_true")
+subparsers = parser.add_subparsers(help="commands")
+
+image_parser = subparsers.add_parser("image", help="Convert Image")
+image_parser.add_argument("-i", type=str, default="./images", metavar="INPUT", help="Input image batch directory (default: ./images)")
+image_parser.add_argument("-o", type=str, default="./output", metavar="OUTPUT", help="Output image directory (default: ./output)")
+image_parser.add_argument("-v", "--verbose", action="store_true")
+image_parser.add_argument("-w", type=str, default="weights-beta.pth", metavar="WEIGHTS", help="Path to weights file (default: weights-beta.pth)")
+image_parser.add_argument("--ext", type=str, default="(keep)", metavar="ext", help="File extension for output (default: <uses the same extension as input>)")
+
+video_parser = subparsers.add_parser("video", help="Convert Video")
+video_parser.add_argument("-i", type=str, default="./videos", metavar="INPUT", help="Input video directory (default: ./videos)")
+video_parser.add_argument("-o", type=str, default="./frames", metavar="OUTPUT", help="Output image directory (default: ./frames)")
+video_parser.add_argument("-v", "--verbose", action="store_true")
+video_parser.add_argument("-w", type=str, default="weights-beta.pth", metavar="WEIGHTS", help="Path to weights file (default: weights-beta.pth)")
+video_parser.add_argument("--ext", type=str, default="(keep)", metavar="ext", help="File extension for output (default: <uses the same extension as input>)")
 
 
 # Model Setup
@@ -49,10 +59,7 @@ def toc(log):
     if args.verbose: print(log.format(time() - start_time))
 
 
-def main():
-    global args
-    args = parser.parse_args()
-
+def image():
     # Load weights
     tic()
     weights = torch.load(args.w)
@@ -61,8 +68,7 @@ def main():
 
     # Load inputs
     tic()
-    data_transform = transforms.ToTensor()
-    dataset = datasets.ImageFolder(root=args.i, transform=data_transform)
+    dataset = datasets.ImageFolder(root=args.i, transform=transforms.ToTensor())
     dataset_loader = torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=False, num_workers=1)
     toc("Prepared dataset in {:6f} seconds.")
 
@@ -86,6 +92,23 @@ def main():
             utils.save_image(input, filepath)
             toc("Saved image: {:06f} seconds.")
 
+def video():
+    # Load weights
+    tic()
+    weights = torch.load(args.w)
+    model.load_state_dict(weights)
+    toc("Loaded weights in {:6f} seconds.")
+
+    # Load inputs
+
+
 # Main
 if __name__ == "__main__":
-    main()
+    global args
+    args = parser.parse_args()
+
+    if args.which is "image":
+        image()
+    elif args.which is "video":
+        video()
+
