@@ -41,6 +41,15 @@ class VideoDataset(Dataset):
     def __len__(self):
         return len(self.clipsList)
 
+    def __getitem__(self, idx):
+        videoFile = os.path.join(self.rootDir, self.clipsList[idx][0])
+        clip, failedClip = self.readVideo(videoFile)
+        if self.transform:
+            clip = self.transform(clip)
+        sample = {'clip': clip, 'label': self.clipsList[idx][1], 'failedClip': failedClip}
+
+        return sample
+
     def readVideo(self, videoFile):
         # Open the video file
         cap = cv2.VideoCapture(videoFile)
@@ -65,15 +74,6 @@ class VideoDataset(Dataset):
             frames[c] -= self.mean[c]
         frames /= 255
         return frames, failedClip
-
-    def __getitem__(self, idx):
-        videoFile = os.path.join(self.rootDir, self.clipsList[idx][0])
-        clip, failedClip = self.readVideo(videoFile)
-        if self.transform:
-            clip = self.transform(clip)
-        sample = {'clip': clip, 'label': self.clipsList[idx][1], 'failedClip': failedClip}
-
-        return sample
 
 x = VideoDataset("videos", 3, 366, 1920, 1080, 0, transforms.ToTensor)
 print("Hello ", x)
