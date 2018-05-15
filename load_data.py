@@ -22,7 +22,7 @@ def output_to_img(output):
 for idx, x in enumerate(dataset_loader):
     tic = time.time()
     input = x[0]
-    print((time.time() - tic) * 1000000,end=",")
+    print((time.time() - tic) * 1000000, end=",")
     tic = time.time()
     utils.save_image(input, "test1.png")
     print((time.time() - tic) * 1000000)

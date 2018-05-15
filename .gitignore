@@ -3,5 +3,6 @@
 /venv
 
 /images
-/tmp
+/weight-training-beta
 /train
+/output
