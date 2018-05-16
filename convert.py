@@ -129,15 +129,18 @@ def video():
 
                 if success:
                     tic()
-                    input = torch.from_numpy(input).permute(2, 1, 0).cuda()
-                    print(input.shape)
+                    input = torch.from_numpy(input.reshape((1,) + input.shape) / 255.0).permute(0, 3, 1, 2).float().cuda()
                     output = model(input)
-                    if args.verbose: print("{}/{}:\t{} {} --> {}".format(idx, time_depth, video, tuple(input.shape), tuple(output.shape)))
+                    if args.verbose: print("{}/{}:\t{} {} --> {} {}".format(idx, time_depth, video, tuple(input.shape), filepath, tuple(output.shape)))
                     toc("Conversion time: {:06f} seconds.")
 
                     tic()
                     utils.save_image(output, filepath)
                     toc("Saved image: {:06f} seconds.")
+
+            os.chdir(directory)
+            os.system("ls -1 frame* > file_list.txt")
+
 
 
 

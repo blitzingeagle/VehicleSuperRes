@@ -22,7 +22,7 @@ model = nn.Sequential(
     nn.ConvTranspose2d(256, 3, (4, 4), (2, 2), (1, 1), (0, 0), bias=False)
 ).to(device)
 
-weights = torch.load("tmp/weights100.pth")
+weights = torch.load("weights-beta.pth")
 model.load_state_dict(weights)
 
 def img_to_input(img):
@@ -38,20 +38,20 @@ def output_to_img(output):
 if __name__ == "__main__":
     model.eval()
     with torch.no_grad():
-        img_in = cv2.imread("2437.jpg")
-
-        input = img_to_input(img_in)
-        output = model(input)
-
-        img_out = output_to_img(output)
-
-        cv2.imshow("input", img_in)
-        cv2.moveWindow("input", 0, 0)
-        cv2.imshow("output", img_out)
-        cv2.moveWindow("output", 500, 0)
-
-        cv2.waitKey()
-        cv2.destroyAllWindows()
+        # img_in = cv2.imread("2437.jpg")
+        #
+        # input = img_to_input(img_in)
+        # output = model(input)
+        #
+        # img_out = output_to_img(output)
+        #
+        # cv2.imshow("input", img_in)
+        # cv2.moveWindow("input", 0, 0)
+        # cv2.imshow("output", img_out)
+        # cv2.moveWindow("output", 500, 0)
+        #
+        # cv2.waitKey()
+        # cv2.destroyAllWindows()
 
         for i in range(1, 2579):
             img_in = cv2.imread("train/inputs/input_{:04d}.bmp".format(i))
