@@ -1,6 +1,7 @@
 import argparse
 import cv2
 from glob import glob
+import numpy as np
 import os
 import os.path as path
 from time import time
@@ -18,17 +19,23 @@ image_parser = subparsers.add_parser("image", help="Convert Image")
 image_parser.add_argument("-i", type=str, default="./images", metavar="INPUT", help="Input image batch directory (default: ./images)")
 image_parser.add_argument("-o", type=str, default="./output", metavar="OUTPUT", help="Output image directory (default: ./output)")
 image_parser.add_argument("-v", "--verbose", action="store_true")
-image_parser.add_argument("-w", type=str, default="weights-beta.pth", metavar="WEIGHTS", help="Path to weights file (default: weights-beta.pth)")
+image_parser.add_argument("-w", type=str, default="weights.pth", metavar="WEIGHTS", help="Path to weights file (default: weights-beta.pth)")
 image_parser.add_argument("--ext", type=str, default="(keep)", metavar="ext", help="File extension for output (default: <uses the same extension as input>)")
+image_parser.add_argument("-fps", type=float, default=30.0, metavar="FPS", help="Frame per second for video output (default: 30 FPS)")
 image_parser.set_defaults(which="image")
 
 video_parser = subparsers.add_parser("video", help="Convert Video")
 video_parser.add_argument("-i", type=str, default="./videos", metavar="INPUT", help="Input video directory (default: ./videos)")
 video_parser.add_argument("-o", type=str, default="./frames", metavar="OUTPUT", help="Output image directory (default: ./frames)")
 video_parser.add_argument("-v", "--verbose", action="store_true")
-video_parser.add_argument("-w", type=str, default="weights-beta.pth", metavar="WEIGHTS", help="Path to weights file (default: weights-beta.pth)")
+video_parser.add_argument("-w", type=str, default="weights.pth", metavar="WEIGHTS", help="Path to weights file (default: weights-beta.pth)")
 video_parser.add_argument("--ext", type=str, default="jpg", metavar="ext", help="File extension for output (default: <uses the same extension as input>)")
 video_parser.set_defaults(which="video")
+
+
+# Extensions
+image_ext = ["jpg", "png", "bmp"]
+video_ext = ["avi"]
 
 
 # Model Setup
@@ -79,9 +86,12 @@ def image():
     toc("Prepared dataset in {:6f} seconds.")
 
     with torch.no_grad():
+        if args.type == "video":
+            videos = {}
+
         for idx, x in enumerate(dataset_loader):
             filepath = dataset.samples[idx][0].replace(args.i, args.o)
-            if args.ext is "(keep)": filepath = path.splitext(filepath)[0] + ("." if args.ext[0] != "." else "") + args.ext
+            if args.ext != "(keep)": filepath = path.splitext(filepath)[0] + "." + args.ext
 
             directory = path.dirname(filepath)
 
@@ -91,10 +101,25 @@ def image():
             if args.verbose: print("{}:\t{} {} --> {} {}".format(idx, dataset.samples[idx][0], tuple(input.shape), filepath, tuple(output.shape)))
             toc("Conversion time: {:06f} seconds.")
 
-            tic()
-            if not os.path.exists(directory): os.makedirs(directory)
-            utils.save_image(output, filepath)
-            toc("Saved image: {:06f} seconds.")
+            if args.type == "image":
+                tic()
+                if not os.path.exists(directory): os.makedirs(directory)
+                utils.save_image(output, filepath)
+                toc("Saved image: {:06f} seconds.")
+            elif args.type == "video":
+                tic()
+                img = output.permute(0, 2, 3, 1).cpu().numpy()
+                img = img.reshape(img.shape[1:])
+                img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+                if directory not in videos:
+                    width, height, channels = img.shape
+                    videos[directory] = cv2.VideoWriter('test.avi', cv2.VideoWriter_fourcc(*"XVID"), args.fps, (width, height))
+                videos[directory].write(img)
+                toc("Saved frame: {:06f} seconds.")
+
+        if args.type == "video":
+            for video in videos.values():
+                video.release()
 
 
 # Execution for video command
@@ -120,8 +145,15 @@ def video():
             toc("Loaded video %s in {:6f} seconds." % video)
             
             time_depth = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+            if args.type == "video":
+                width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+                height = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+                fps = cap.get(cv2.CAP_PROP_FPS)
+                video_out = cv2.VideoWriter('test.avi', cv2.VideoWriter_fourcc(*"XVID"), fps, (width, height))
+
             for idx in range(1, time_depth+1):
-                filepath = path.join(directory, "frame{:07d}".format(idx) + ("." if args.ext[0] != "." else "") + args.ext)
+                filepath = path.join(directory, "frame{:07d}.".format(idx) + args.ext)
 
                 tic()
                 success, input = cap.read()
@@ -129,28 +161,39 @@ def video():
 
                 if success:
                     tic()
-                    input = torch.from_numpy(input.reshape((1,) + input.shape) / 255.0).permute(0, 3, 1, 2).float().cuda()
+                    input = input[:,:,::-1]
+                    input = np.swapaxes(np.swapaxes(np.array(input, dtype=float), 0, 2), 1, 2) / 255.0
+                    input = torch.from_numpy(input.reshape((1,) + input.shape)).float().cuda()
                     output = model(input)
                     if args.verbose: print("{}/{}:\t{} {} --> {} {}".format(idx, time_depth, video, tuple(input.shape), filepath, tuple(output.shape)))
                     toc("Conversion time: {:06f} seconds.")
 
-                    tic()
-                    utils.save_image(output, filepath)
-                    toc("Saved image: {:06f} seconds.")
+                    if args.type == "image":
+                        tic()
+                        # cv2.imwrite(filepath, img * 255.0)
+                        utils.save_image(output, filepath)
+                        toc("Saved image: {:06f} seconds.")
+                    elif args.type == "video":
+                        tic()
+                        img = output.permute(0, 2, 3, 1).cpu().numpy()
+                        img = img.reshape(img.shape[1:])
+                        img = img[:, :, ::-1] * 255.0
+                        video_out.write(np.uint8(img))
+                        toc("Saved frame: {:06f} seconds.")
+
+            if args.type == "video":
+                video_out.release()
 
             os.chdir(directory)
             os.system("ls -1 frame* > file_list.txt")
-
-
-
-
-
 
 
 # Main
 if __name__ == "__main__":
     global args
     args = parser.parse_args()
+    args.ext = args.ext.replace('.', '')
+    args.type = "image" if args.ext.lower() in image_ext else "video" if args.ext.lower() in video_ext else None
 
     if args.which is "image":
         image()

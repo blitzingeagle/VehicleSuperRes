@@ -63,6 +63,9 @@ if __name__ == "__main__":
                 if img_in is None or img_out is None:
                     break
 
+                img_in = cv2.cvtColor(img_in, cv2.COLOR_BGR2RGB)
+                img_out = cv2.cvtColor(img_out, cv2.COLOR_BGR2RGB)
+
                 img_in = np.swapaxes(np.swapaxes(np.array(img_in, dtype=float), 0, 2), 1, 2) / 255.0
                 img_out = np.swapaxes(np.swapaxes(np.array(img_out, dtype=float), 0, 2), 1, 2) / 255.0
 
