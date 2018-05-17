@@ -22,10 +22,11 @@ weights are provided, included are also scripts for training custom PyTorch weig
             * [Custom input directory](#custom-input-directory)
             * [Custom output directory](#custom-output-directory)
             * [Custom file type](#custom-file-type)
-            * [Video output from images](#video-output-from-images)
+            * [Video output from image](#video-output-from-image)
             * [Image converting examples](#image-converting-examples)
         * [Video Input](#video-input)
             * [Default video Command](#default-video-command)
+            * [Video output from video](#video-output-from-video)
         * [Additional CLI Flags](#additional-cli-flags)
             * [Verbose](#verbose)
             * [Weights file](#weights-file)
@@ -155,7 +156,7 @@ To manipulate the file type for the output the `--ext` flag can be used. For ima
 python convert.py image --ext jpg
 ```
 
-##### Video output from images
+##### Video output from image
 The conversion tool can produce a video format instead of images by also using the `--ext` flag with `avi`. The default
 frame rate is `30 fps` but can be altered using the `-fps` flag.
 ```bash
@@ -201,12 +202,44 @@ python convert.py image -i myimagedir/ -o myoutputdir/ --ext avi -fps 60
 ```bash
 python convert.py video
 ```
-Without specifying input parameters, the image batches are taken from the `videos/` directory from the root folder.
+Without specifying input parameters, the image batches are taken from the `videos/` directory from the root folder. By
+default, the output would be placed in the `frames/` directory. A subdirectory will be created for each `avi` video file
+using the file's base name. Its contents will be `jpg` images for each of the video's frames in the following format:
+```text
+frame0000001.jpg
+frame0000002.jpg
+frame0000003.jpg
+    ...
+```
+Note that the numbers are 1 indexed. The conversion tool will also produce a `file_list.txt` file containing, in order,
+the list of the frames. The result should be identical to the result of `ls -1 frame*` so be cautious of putting other 
+files in the same directory.
+
+The command flags for the `video` command is largely identical to those for `image`. The
+[input](#custom-input-directory), [output](#custom-output-directory), and [file type](#custom-file-type) follow the same
+protocol.
+
+##### Video output from video
+The conversion tool can produce a video format instead of images by using the `--ext` flag with `avi`. The default frame
+rate matches the input file but can be altered using the `-fps` flag.
+```bash
+python convert.py image --ext avi -fps 60
+```
+
 
 #### Additional CLI Flags
 ##### Verbose
+To view logging outputs use the `-v` flag. This will print additional logging information.
+```bash
+python convert.py image -v
+```
 
 ##### Weights file
+To specify a custom weights file, use the `w` flag followed by the path to the weights file.
+```bash
+python convert.py image -w path/to/myweights.pth
+```
+
 
 ## References
 - [waifu2x](https://github.com/nagadomi/waifu2x) by [nagadomi](https://github.com/nagadomi)
