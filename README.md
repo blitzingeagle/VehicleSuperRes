@@ -9,11 +9,24 @@ weights are provided, included are also scripts for training custom PyTorch weig
 
 ## Table of contents
 <!--ts-->
-   * [Table of contents](#table-of-contents)
+* [VehicleSuperRes](#vehiclesuperres)
+* [Table of contents](#table-of-contents)
+* [Summary](#summary)
+* [Installation](#installation)
+    * [Cloning the Repository](#cloning-the-repository)
+    * [Python Packages](#python-packages)
+* [Command Line Interface (CLI)](#command-line-interface-(cli))
+    * [Upscale Conversion](#upscale-conversion)
+        * [Image Input](#image-input)
+            * [Default image Command](#default-image-command)
+            * [Custom input directory](#custom-input-directory)
+            * [Custom output directory](#custom-output-directory)
+            * [Custom file type](#custom-file-type)
+            * [Video output from images](#video-output-from-images)
+            * [Image converting examples](#image-converting-examples)
+        * [Video Input](#video-input)
+            * [Default video Command](#default-video-command)
 <!--te-->
-
-## References
-- [waifu2x](https://github.com/nagadomi/waifu2x) by [nagadomi](https://github.com/nagadomi)
 
 ## Summary
 
@@ -41,7 +54,7 @@ to video. The execution parameters are obtained by parsing command line argument
 The convert tool is organized into two commands `image` and `video` signifying the type of the input data.
 
 #### Image Input
-##### Default
+##### Default image Command
 ```bash
 python convert.py image
 ```
@@ -87,7 +100,7 @@ To manipulate the file type for the output the `--ext` flag can be used. For ima
 python convert.py image --ext jpg
 ```
 
-##### Video output
+##### Video output from images
 The conversion tool can produce a video format instead of images by also using the `--ext` flag with `avi`. The default
 frame rate is `30 fps` but can be altered using the `-fps` flag.
 ```bash
@@ -128,4 +141,11 @@ python convert.py image -i myimagedir/ -o myoutputdir/ --ext avi
 python convert.py image -i myimagedir/ -o myoutputdir/ --ext avi -fps 60
 ```
 
+#### Video Input
+##### Default video Command
+```bash
+python convert.py video
+```
 
+## References
+- [waifu2x](https://github.com/nagadomi/waifu2x) by [nagadomi](https://github.com/nagadomi)
