@@ -18,6 +18,8 @@ weights are provided, included are also scripts for training custom PyTorch weig
 To download the program, simply clone the git repository.
 ```bash
 git clone https://github.com/blitzingeagle/VehicleSuperRes.git
+cd VehicleSuperRes
+mkdir images output videos frames   # Default input and output directories for convert.py
 ```
 ### Python Packages
 For your convenience, the Python packages used in these scripts have been organized into a text file. To set up these
@@ -29,7 +31,9 @@ pip install -r requirements.txt
 ## Command Line Interface (CLI)
 ### Upscale Conversion
 The convert tool supports a total of four different functions: image to image, image to video, video to image, and video
-to image 
+to video. The execution parameters are obtained by parsing command line arguments following `python convert.py`.
+
+The convert tool is organized into two commands `image` and `video` signifying the type of the input data.
 
 #### Image Input
 ```bash
