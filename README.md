@@ -15,7 +15,7 @@ weights are provided, included are also scripts for training custom PyTorch weig
 * [Installation](#installation)
     * [Cloning the Repository](#cloning-the-repository)
     * [Python Packages](#python-packages)
-* [Command Line Interface (CLI)](#command-line-interface-(cli))
+* [Command Line Interface (CLI)](#command-line-interface-cli)
     * [Upscale Conversion](#upscale-conversion)
         * [Image Input](#image-input)
             * [Default image Command](#default-image-command)
