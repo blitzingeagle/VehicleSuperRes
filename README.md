@@ -61,6 +61,8 @@ nn.Sequential {
 ```
 which was later modified to
 ```python
+import torch.nn as nn
+
 nn.Sequential(
     nn.Conv2d(3, 16, (3, 3), padding=(1, 1)),
     nn.LeakyReLU(0.1),
@@ -78,6 +80,11 @@ nn.Sequential(
     nn.Sigmoid()
 )
 ```
+The padding parameters in the deconvolution layer were altered to guarantee the output image size to be twice the size
+of the input. To preserve the organizational structure of the output neurons, the output to the deconvolution was no
+longer flattened. Instead, a `Sigmoid` filter was used to ensure that the output neurons contained normalized values
+between 0 and 1.
+
 
 ## Installation
 ### Cloning the Repository
