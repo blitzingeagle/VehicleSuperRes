@@ -59,7 +59,25 @@ nn.Sequential {
   (14): nn.View(-1)
 }
 ```
-
+which was later modified to
+```python
+nn.Sequential(
+    nn.Conv2d(3, 16, (3, 3), padding=(1, 1)),
+    nn.LeakyReLU(0.1),
+    nn.Conv2d(16, 32, (3, 3), padding=(1, 1)),
+    nn.LeakyReLU(0.1),
+    nn.Conv2d(32, 64, (3, 3), padding=(1, 1)),
+    nn.LeakyReLU(0.1),
+    nn.Conv2d(64, 128, (3, 3), padding=(1, 1)),
+    nn.LeakyReLU(0.1),
+    nn.Conv2d(128, 128, (3, 3), padding=(1, 1)),
+    nn.LeakyReLU(0.1),
+    nn.Conv2d(128, 256, (3, 3), padding=(1, 1)),
+    nn.LeakyReLU(0.1),
+    nn.ConvTranspose2d(256, 3, (4, 4), (2, 2), (1, 1), (0, 0), bias=False),
+    nn.Sigmoid()
+)
+```
 
 ## Installation
 ### Cloning the Repository
