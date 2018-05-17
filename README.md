@@ -40,9 +40,26 @@ The code in this repository was instead implemented in the newer PyTorch, which 
 Lua Torch7.
 
 In particular the original network had this structure:
-```text
-
+```lua
+nn.Sequential {
+  [input -> (1) -> (2) -> (3) -> (4) -> (5) -> (6) -> (7) -> (8) -> (9) -> (10) -> (11) -> (12) -> (13) -> (14) -> output]
+  (1): nn.SpatialConvolutionMM(3 -> 16, 3x3)
+  (2): nn.LeakyReLU(0.1)
+  (3): nn.SpatialConvolutionMM(16 -> 32, 3x3)
+  (4): nn.LeakyReLU(0.1)
+  (5): nn.SpatialConvolutionMM(32 -> 64, 3x3)
+  (6): nn.LeakyReLU(0.1)
+  (7): nn.SpatialConvolutionMM(64 -> 128, 3x3)
+  (8): nn.LeakyReLU(0.1)
+  (9): nn.SpatialConvolutionMM(128 -> 128, 3x3)
+  (10): nn.LeakyReLU(0.1)
+  (11): nn.SpatialConvolutionMM(128 -> 256, 3x3)
+  (12): nn.LeakyReLU(0.1)
+  (13): nn.SpatialFullConvolution(256 -> 3, 4x4, 2,2, 3,3) without bias
+  (14): nn.View(-1)
+}
 ```
+
 
 ## Installation
 ### Cloning the Repository
