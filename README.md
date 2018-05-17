@@ -37,5 +37,16 @@ The convert tool is organized into two commands `image` and `video` signifying t
 
 #### Image Input
 ```bash
-
+python convert.py
+```
+Without specifying input parameters, the image batches are taken from the `images/` directory from the root folder. All
+images should be under a subdirectory of the `images/` directory with the following topology:
+```text
+images/batch_dir_01/input_0001.jpg
+images/batch_dir_01/input_0002.jpg
+images/batch_dir_01/input_0003.bmp
+    ...
+images/batch_dir_02/random_file_name.png
+    ...
+images/random_batch_name/input_0123.png
 ```
