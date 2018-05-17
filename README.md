@@ -7,6 +7,11 @@ with Python 3, and runs on [NVIDIA CUDA](https://developer.nvidia.com/cuda-toolk
 This repository contains a script to upscale with a 2x resolution a directory of images or videos. Though some trained
 weights are provided, included are also scripts for training custom PyTorch weight files (.pth) and testing the model.
 
+## Table of contents
+<!--ts-->
+   * [Table of contents](#table-of-contents)
+<!--te-->
+
 ## References
 - [waifu2x](https://github.com/nagadomi/waifu2x) by [nagadomi](https://github.com/nagadomi)
 
