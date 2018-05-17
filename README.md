@@ -36,8 +36,9 @@ to video. The execution parameters are obtained by parsing command line argument
 The convert tool is organized into two commands `image` and `video` signifying the type of the input data.
 
 #### Image Input
+##### Default
 ```bash
-python convert.py
+python convert.py image
 ```
 Without specifying input parameters, the image batches are taken from the `images/` directory from the root folder. All
 images should be under a subdirectory of the `images/` directory with the following topology:
@@ -51,4 +52,75 @@ images/batch_dir_02/random_file_name.png
 images/random_batch_name/input_0123.png
 ```
 By default, the results of the conversion tool are images. The images will retain their file names but exist under the
-`output` directory.
+`output` directory. The inputs from above will produce the following:
+```text
+output/batch_dir_01/input_0001.jpg
+output/batch_dir_01/input_0002.jpg
+output/batch_dir_01/input_0003.bmp
+    ...
+output/batch_dir_02/random_file_name.png
+    ...
+output/random_batch_name/input_0123.png
+```
+
+##### Custom input directory
+The `-i` flag can be used to specify a custom input directory.
+```bash
+python convert.py image -i path/to/images/
+```
+
+##### Custom output directory
+The `-o` flag can be used to specify a custom output directory.
+```bash
+python convert.py image -o path/to/output/
+```
+
+##### Custom file type
+To manipulate the file type for the output the `--ext` flag can be used. For images, the accepted file extensions are
+`jpg`, `png`, and `bmp`.
+```bash
+python convert.py image --ext jpg
+```
+
+##### Video output
+The conversion tool can produce a video format instead of images by also using the `--ext` flag with `avi`. The default
+frame rate is `30 fps` but can be altered using the `-fps` flag.
+```bash
+python convert.py image --ext avi -fps 60
+```
+This will produce a video for each subdirectory of the `images/` directory, with the frames determined by the
+lexicographical order of the image file names. As such, it is recommended that the image files be serialized in the
+following manner to avoid frame mismatch.
+```text
+input_0000001.jpg
+input_0000002.jpg
+input_0000003.jpg
+    ...
+input_0001234.jpg
+```
+Note that the following arrangement would likely cause undesired behaviour.
+```text
+input_1.jpg
+input_2.jpg
+input_3.jpg
+    ...
+input_10.jpg
+input_11.jpg
+    ...
+```
+The videos will be stored in the `output/` directory with the name of the directory containing the frames as the base
+name of the video file.
+
+##### Image Converting Examples
+```bash
+# Upscales images from myimagedir/ to myoutputdir/ with png extension
+python convert.py image -i myimagedir/ -o myoutputdir/ --ext png
+
+# Upscales images to 30fps video from myimagedir/ to in myoutputdir/ with avi extension
+python convert.py image -i myimagedir/ -o myoutputdir/ --ext avi
+
+# Upscales images to 60fps video from myimagedir/ to in myoutputdir/ with avi extension
+python convert.py image -i myimagedir/ -o myoutputdir/ --ext avi -fps 60
+```
+
+
