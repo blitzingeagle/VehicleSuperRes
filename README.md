@@ -159,6 +159,7 @@ python convert.py image -i myimagedir/ -o myoutputdir/ --ext avi -fps 60
 ```bash
 python convert.py video
 ```
+Without specifying input parameters, the image batches are taken from the `videos/` directory from the root folder.
 
 #### Additional CLI Flags
 ##### Verbose
