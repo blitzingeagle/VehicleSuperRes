@@ -30,6 +30,7 @@ video_parser.add_argument("-o", type=str, default="./frames", metavar="OUTPUT", 
 video_parser.add_argument("-v", "--verbose", action="store_true")
 video_parser.add_argument("-w", type=str, default="weights.pth", metavar="WEIGHTS", help="Path to weights file (default: weights-beta.pth)")
 video_parser.add_argument("--ext", type=str, default="jpg", metavar="ext", help="File extension for output (default: <uses the same extension as input>)")
+image_parser.add_argument("-fps", type=float, default=None, metavar="FPS", help="Frame per second for video output (default: <uses the same as input>)")
 video_parser.set_defaults(which="video")
 
 
