@@ -26,10 +26,22 @@ weights are provided, included are also scripts for training custom PyTorch weig
             * [Image converting examples](#image-converting-examples)
         * [Video Input](#video-input)
             * [Default video Command](#default-video-command)
+        * [Additional CLI Flags](#additional-cli-flags)
+            * 
+* [References](#references)
 <!--te-->
 
 ## Summary
+This repository contains a set of tools to convert images and videos to a 2x upscale version and contains tools to train
+and test custom weights. The Deep Convolutional Neural Network model was adapted from [waifu2x](#references), which
+featured an implementation in Lua Torch7 with slight modifications to the neural net structure and retrained weights. 
+The code in this repository was instead implemented in the newer PyTorch, which saw some deprecated functionality from 
+Lua Torch7.
 
+In particular the original network had this structure:
+```text
+
+```
 
 ## Installation
 ### Cloning the Repository
@@ -146,6 +158,11 @@ python convert.py image -i myimagedir/ -o myoutputdir/ --ext avi -fps 60
 ```bash
 python convert.py video
 ```
+
+#### Additional CLI Flags
+##### Verbose
+
+##### Weights file
 
 ## References
 - [waifu2x](https://github.com/nagadomi/waifu2x) by [nagadomi](https://github.com/nagadomi)
