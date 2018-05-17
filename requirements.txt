@@ -1,0 +1,5 @@
+argparse
+torch
+torchvision
+numpy
+opencv-python
