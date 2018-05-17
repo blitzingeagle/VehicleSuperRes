@@ -50,3 +50,5 @@ images/batch_dir_02/random_file_name.png
     ...
 images/random_batch_name/input_0123.png
 ```
+By default, the results of the conversion tool are images. The images will retain their file names but exist under the
+`output` directory.
