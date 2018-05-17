@@ -38,7 +38,7 @@ def output_to_img(output):
 if __name__ == "__main__":
     model.eval()
     with torch.no_grad():
-        img_in = cv2.imread("FFFF00.png")
+        img_in = cv2.imread("images/28.jpg")
 
         input = img_to_input(img_in)
         output = model(input)
