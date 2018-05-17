@@ -1,6 +1,6 @@
 # VehicleSuperRes
 
-Image and Video Super-Resolution, specialized for vehicle and traffic view processing and performed by using Deep 
+Image and Video Super-Resolution, specialized for vehicle and traffic view processing and performed by using Deep
 Convolutional Neural Networks. The program is implemented using [PyTorch](https://pytorch.org/docs/stable/index.html)
 with Python 3, and runs on [NVIDIA CUDA](https://developer.nvidia.com/cuda-toolkit).
 
@@ -24,4 +24,14 @@ For your convenience, the Python packages used in these scripts have been organi
 dependencies run the following with `pip`. (Note: Depending on your Python installation, you may use `pip3` instead)
 ```bash
 pip install -r requirements.txt
+```
+
+## Command Line Interface (CLI)
+### Upscale Conversion
+The convert tool supports a total of four different functions: image to image, image to video, video to image, and video
+to image 
+
+#### Image Input
+```bash
+
 ```
