@@ -19,7 +19,8 @@ model = nn.Sequential(
     nn.LeakyReLU(0.1),
     nn.Conv2d(128, 256, (3, 3), padding=(1, 1)),
     nn.LeakyReLU(0.1),
-    nn.ConvTranspose2d(256, 3, (4, 4), (2, 2), (1, 1), (0, 0), bias=False)
+    nn.ConvTranspose2d(256, 3, (4, 4), (2, 2), (1, 1), (0, 0), bias=False),
+    nn.Sigmoid()
 ).to(device)
 
 weights = torch.load("weights.pth")
