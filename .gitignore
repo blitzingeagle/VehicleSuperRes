@@ -2,9 +2,9 @@
 /.idea
 /venv
 
-/images
-/videos
+/images*
+/videos*
 /trained-weights*
-/train
-/output
-/frames
+/train*
+/output*
+/frames*
