@@ -26,7 +26,7 @@ model = nn.Sequential(
     nn.Sigmoid()
 ).to(device)
 
-learning_rate = 0.08
+learning_rate = 0.01
 learning_rate_decay = 0.85
 optimizer = optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
 loss_fn = F.mse_loss
