@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import os
 
 import torch
 import torch.nn as nn
@@ -21,13 +22,14 @@ model = nn.Sequential(
     nn.LeakyReLU(0.1),
     nn.Conv2d(128, 256, (3, 3), padding=(1, 1)),
     nn.LeakyReLU(0.1),
-    nn.ConvTranspose2d(256, 3, (4, 4), (2, 2), (1, 1), (0, 0), bias=False)
+    nn.ConvTranspose2d(256, 3, (4, 4), (2, 2), (1, 1), (0, 0), bias=False),
+    nn.Sigmoid()
 ).to(device)
 
-learning_rate = 0.1
+learning_rate = 0.05
 optimizer = optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
 loss_fn = F.mse_loss
-batches = 49
+batches = 50
 epochs = 250
 
 log_interval = 1
@@ -84,6 +86,7 @@ if __name__ == "__main__":
         optimizer = optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
 
         print(model.state_dict())
-        torch.save(model.state_dict(), "tmp/weights{:03d}.pth".format(epoch))
+        if not os.path.exists("trained-weights"): os.makedirs("trained-weights")
+        torch.save(model.state_dict(), "trained-weights/weights{:03d}.pth".format(epoch))
 
     torch.save(model.state_dict(), "weights.pth".format(epoch))
