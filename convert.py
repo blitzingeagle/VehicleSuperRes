@@ -92,8 +92,9 @@ def image():
         for idx, x in enumerate(dataset_loader):
             filepath = dataset.samples[idx][0].replace(args.i, args.o)
             if args.ext != "(keep)": filepath = path.splitext(filepath)[0] + "." + args.ext
-
             directory = path.dirname(filepath)
+            if args.type == "image":
+                if not os.path.exists(directory): os.makedirs(directory)
 
             tic()
             input = x[0].cuda()
@@ -103,18 +104,34 @@ def image():
 
             if args.type == "image":
                 tic()
-                if not os.path.exists(directory): os.makedirs(directory)
                 utils.save_image(output, filepath)
                 toc("Saved image: {:06f} seconds.")
             elif args.type == "video":
                 tic()
                 img = output.permute(0, 2, 3, 1).cpu().numpy()
                 img = img.reshape(img.shape[1:])
-                img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+                img = img[:, :, ::-1]
+
+                cv2.imshow("image", img)
+                cv2.waitKey()
+                cv2.destroyAllWindows()
+
+                img = img * 255
+
+                imgr = img[:,:,2].reshape(img.shape[0]*img.shape[1])
+                print("Max: ", max(imgr))
+                print("Min: ", min(imgr))
+                imgg = img[:,:,1].reshape(img.shape[0]*img.shape[1])
+                print("Max: ", max(imgg))
+                print("Min: ", min(imgg))
+                imgb = img[:,:,0].reshape(img.shape[0]*img.shape[1])
+                print("Max: ", max(imgb))
+                print("Min: ", min(imgb))
+
                 if directory not in videos:
-                    width, height, channels = img.shape
-                    videos[directory] = cv2.VideoWriter('test.avi', cv2.VideoWriter_fourcc(*"XVID"), args.fps, (width, height))
-                videos[directory].write(img)
+                    height, width, channels = img.shape
+                    videos[directory] = cv2.VideoWriter(directory + "." + args.ext, cv2.VideoWriter_fourcc(*"XVID"), args.fps, (width, height))
+                videos[directory].write(np.uint8(img))
                 toc("Saved frame: {:06f} seconds.")
 
         if args.type == "video":
@@ -138,6 +155,9 @@ def video():
     with torch.no_grad():
         for video in videos:
             directory = path.splitext(video.replace(args.i, args.o))[0]
+            if args.type == "video":
+                filepath = directory + "." + args.ext
+                directory = path.dirname(filepath)
             if not os.path.exists(directory): os.makedirs(directory)
 
             tic()
@@ -147,13 +167,14 @@ def video():
             time_depth = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
             if args.type == "video":
-                width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-                height = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+                width = 2 * int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+                height = 2 * int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
                 fps = cap.get(cv2.CAP_PROP_FPS)
-                video_out = cv2.VideoWriter('test.avi', cv2.VideoWriter_fourcc(*"XVID"), fps, (width, height))
+                video_out = cv2.VideoWriter(filepath, cv2.VideoWriter_fourcc(*"XVID"), fps, (width, height))
 
             for idx in range(1, time_depth+1):
-                filepath = path.join(directory, "frame{:07d}.".format(idx) + args.ext)
+                if args.type == "image":
+                    filepath = path.join(directory, "frame{:07d}.".format(idx) + args.ext)
 
                 tic()
                 success, input = cap.read()
@@ -165,7 +186,12 @@ def video():
                     input = np.swapaxes(np.swapaxes(np.array(input, dtype=float), 0, 2), 1, 2) / 255.0
                     input = torch.from_numpy(input.reshape((1,) + input.shape)).float().cuda()
                     output = model(input)
-                    if args.verbose: print("{}/{}:\t{} {} --> {} {}".format(idx, time_depth, video, tuple(input.shape), filepath, tuple(output.shape)))
+                    if args.verbose:
+                        if args.type == "image":
+                            print("{0}/{1}:\t{2} {3} --> {4} {5}".format(idx, time_depth, video, tuple(input.shape), filepath, tuple(output.shape)))
+                        elif args.type == "video":
+                            print("{0}/{1}:\t{2} {3} --> {4} [{0}] {5}".format(idx, time_depth, video, tuple(input.shape), filepath, tuple(output.shape)))
+
                     toc("Conversion time: {:06f} seconds.")
 
                     if args.type == "image":
@@ -178,14 +204,22 @@ def video():
                         img = output.permute(0, 2, 3, 1).cpu().numpy()
                         img = img.reshape(img.shape[1:])
                         img = img[:, :, ::-1] * 255.0
+                        # print(img.shape)
+                        # cv2.imshow("img", np.uint8(img))
+                        # cv2.waitKey()
+                        # cv2.destroyAllWindows()
                         video_out.write(np.uint8(img))
                         toc("Saved frame: {:06f} seconds.")
 
-            if args.type == "video":
+            if args.type == "image":
+                pwd = os.getcwd()
+                os.chdir(directory)
+                os.system("ls -1 frame* > file_list.txt")
+                os.chdir(pwd)
+            elif args.type == "video":
                 video_out.release()
 
-            os.chdir(directory)
-            os.system("ls -1 frame* > file_list.txt")
+
 
 
 # Main
@@ -196,6 +230,7 @@ if __name__ == "__main__":
     args.type = "image" if args.ext.lower() in image_ext else "video" if args.ext.lower() in video_ext else None
 
     if args.which is "image":
+        if args.ext == "(keep)": args.type = "image"
         image()
     elif args.which is "video":
         video()
