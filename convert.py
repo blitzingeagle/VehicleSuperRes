@@ -154,7 +154,7 @@ def video():
             if args.type == "video":
                 width = 2 * int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
                 height = 2 * int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                fps = cap.get(cv2.CAP_PROP_FPS)
+                fps = cap.get(cv2.CAP_PROP_FPS) if args.fps is None else args.fps
                 video_out = cv2.VideoWriter(filepath, cv2.VideoWriter_fourcc(*"XVID"), fps, (width, height))
 
             for idx in range(1, time_depth+1):
