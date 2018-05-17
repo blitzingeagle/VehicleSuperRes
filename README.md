@@ -27,7 +27,8 @@ weights are provided, included are also scripts for training custom PyTorch weig
         * [Video Input](#video-input)
             * [Default video Command](#default-video-command)
         * [Additional CLI Flags](#additional-cli-flags)
-            * 
+            * [Verbose](#verbose)
+            * [Weights file](#weights-file)
 * [References](#references)
 <!--te-->
 
