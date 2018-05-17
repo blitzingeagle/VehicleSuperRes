@@ -55,7 +55,8 @@ model = nn.Sequential(
     nn.LeakyReLU(0.1),
     nn.Conv2d(128, 256, (3, 3), padding=(1, 1)),
     nn.LeakyReLU(0.1),
-    nn.ConvTranspose2d(256, 3, (4, 4), (2, 2), (1, 1), (0, 0), bias=False)
+    nn.ConvTranspose2d(256, 3, (4, 4), (2, 2), (1, 1), (0, 0), bias=False),
+    nn.Sigmoid()
 ).to(device)
 
 model.eval()
@@ -110,23 +111,7 @@ def image():
                 tic()
                 img = output.permute(0, 2, 3, 1).cpu().numpy()
                 img = img.reshape(img.shape[1:])
-                img = img[:, :, ::-1]
-
-                cv2.imshow("image", img)
-                cv2.waitKey()
-                cv2.destroyAllWindows()
-
-                img = img * 255
-
-                imgr = img[:,:,2].reshape(img.shape[0]*img.shape[1])
-                print("Max: ", max(imgr))
-                print("Min: ", min(imgr))
-                imgg = img[:,:,1].reshape(img.shape[0]*img.shape[1])
-                print("Max: ", max(imgg))
-                print("Min: ", min(imgg))
-                imgb = img[:,:,0].reshape(img.shape[0]*img.shape[1])
-                print("Max: ", max(imgb))
-                print("Min: ", min(imgb))
+                img = img[:, :, ::-1] * 255
 
                 if directory not in videos:
                     height, width, channels = img.shape
