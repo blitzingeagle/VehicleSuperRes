@@ -22,6 +22,7 @@ image_parser.add_argument("-v", "--verbose", action="store_true")
 image_parser.add_argument("-w", type=str, default="weights.pth", metavar="WEIGHTS", help="Path to weights file (default: weights-beta.pth)")
 image_parser.add_argument("--ext", type=str, default="(keep)", metavar="ext", help="File extension for output (default: <uses the same extension as input>)")
 image_parser.add_argument("-fps", type=float, default=30.0, metavar="FPS", help="Frame per second for video output (default: 30 FPS)")
+image_parser.add_argument("--no-upscale", action="store_true")
 image_parser.set_defaults(which="image")
 
 video_parser = subparsers.add_parser("video", help="Convert Video")
@@ -31,6 +32,7 @@ video_parser.add_argument("-v", "--verbose", action="store_true")
 video_parser.add_argument("-w", type=str, default="weights.pth", metavar="WEIGHTS", help="Path to weights file (default: weights-beta.pth)")
 video_parser.add_argument("--ext", type=str, default="jpg", metavar="ext", help="File extension for output (default: <uses the same extension as input>)")
 video_parser.add_argument("-fps", type=float, default=None, metavar="FPS", help="Frame per second for video output (default: <uses the same as input>)")
+video_parser.add_argument("--no-upscale", action="store_true")
 video_parser.set_defaults(which="video")
 
 
@@ -43,7 +45,7 @@ video_ext = ["avi"]
 torch.set_default_tensor_type('torch.cuda.FloatTensor')
 device = torch.device("cuda")
 
-model = nn.Sequential(
+upscale_model = nn.Sequential(
     nn.Conv2d(3, 16, (3, 3), padding=(1, 1)),
     nn.LeakyReLU(0.1),
     nn.Conv2d(16, 32, (3, 3), padding=(1, 1)),
@@ -60,7 +62,7 @@ model = nn.Sequential(
     nn.Sigmoid()
 ).to(device)
 
-model.eval()
+upscale_model.eval()
 
 
 # Time logging functions
@@ -78,7 +80,7 @@ def image():
     # Load weights
     tic()
     weights = torch.load(args.w)
-    model.load_state_dict(weights)
+    upscale_model.load_state_dict(weights)
     toc("Loaded weights in {:6f} seconds.")
 
     # Load inputs
@@ -100,7 +102,7 @@ def image():
 
             tic()
             input = x[0].cuda()
-            output = model(input)
+            output = input if args.no_upscale else upscale_model(input)
             if args.verbose: print("{}:\t{} {} --> {} {}".format(idx, dataset.samples[idx][0], tuple(input.shape), filepath, tuple(output.shape)))
             toc("Conversion time: {:06f} seconds.")
 
@@ -130,7 +132,7 @@ def video():
     # Load weights
     tic()
     weights = torch.load(args.w)
-    model.load_state_dict(weights)
+    upscale_model.load_state_dict(weights)
     toc("Loaded weights in {:6f} seconds.")
 
     # Load inputs
@@ -171,7 +173,7 @@ def video():
                     input = input[:,:,::-1]
                     input = np.swapaxes(np.swapaxes(np.array(input, dtype=float), 0, 2), 1, 2) / 255.0
                     input = torch.from_numpy(input.reshape((1,) + input.shape)).float().cuda()
-                    output = model(input)
+                    output = upscale_model(input)
                     if args.verbose:
                         if args.type == "image":
                             print("{0}/{1}:\t{2} {3} --> {4} {5}".format(idx, time_depth, video, tuple(input.shape), filepath, tuple(output.shape)))
