@@ -95,14 +95,6 @@ def toc(log):
 
 # Execution for image command
 def image():
-    # Load weights
-    tic()
-    upscale_weights = torch.load(args.w)
-    upscale_model.load_state_dict(upscale_weights)
-    redux_weights = torch.load("noise%d_model.pth" % args.noise_level)
-    redux_model.load_state_dict(redux_weights)
-    toc("Loaded weights in {:6f} seconds.")
-
     # Load inputs
     tic()
     dataset = datasets.ImageFolder(root=args.i, transform=transforms.ToTensor())
@@ -149,14 +141,6 @@ def image():
 
 # Execution for video command
 def video():
-    # Load weights
-    tic()
-    upscale_weights = torch.load(args.w)
-    upscale_model.load_state_dict(upscale_weights)
-    redux_weights = torch.load("noise%d_model.pth" % args.noise_level)
-    redux_model.load_state_dict(redux_weights)
-    toc("Loaded weights in {:6f} seconds.")
-
     # Load inputs
     tic()
     videos = glob(path.join(args.i, "*.avi"))
@@ -241,6 +225,14 @@ if __name__ == "__main__":
     if args.noise_level < 0 or args.noise_level > 3:
         print("Bad noise level. Must be an integer between 0 and 3.")
         exit(0)
+
+    # Load weights
+    tic()
+    upscale_weights = torch.load(args.w)
+    upscale_model.load_state_dict(upscale_weights)
+    redux_weights = torch.load("noise%d_model.pth" % args.noise_level)
+    redux_model.load_state_dict(redux_weights)
+    toc("Loaded weights in {:6f} seconds.")
 
     if args.which is "image":
         if args.ext == "(keep)": args.type = "image"
