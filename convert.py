@@ -115,6 +115,7 @@ def image():
             tic()
             input = x[0].cuda()
             output = input if args.no_upscale else upscale_model(input)
+            output = redux_model(output)
             if args.verbose: print("{}:\t{} {} --> {} {}".format(idx, dataset.samples[idx][0], tuple(input.shape), filepath, tuple(output.shape)))
             toc("Conversion time: {:06f} seconds.")
 
