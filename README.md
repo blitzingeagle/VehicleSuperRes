@@ -202,9 +202,9 @@ python convert.py image -i myimagedir/ -o myoutputdir/ --ext avi -fps 60
 ```bash
 python convert.py video
 ```
-Without specifying input parameters, the image batches are taken from the `videos/` directory from the root folder. By
-default, the output would be placed in the `frames/` directory. A subdirectory will be created for each `avi` video file
-using the file's base name. Its contents will be `jpg` images for each of the video's frames in the following format:
+Without specifying input parameters, the video is taken from the `videos/input.avi` from the root folder. By default, 
+the output would be placed in the `frames/` directory. A subdirectory will be created for the `avi` video file using 
+the file's base name. Its contents will be `jpg` images for each of the video's frames in the following format:
 ```text
 frame0000001.jpg
 frame0000002.jpg
