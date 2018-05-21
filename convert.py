@@ -163,7 +163,7 @@ def image():
 def video():
     # Load inputs
     tic()
-    videos = glob(path.join(args.i, "*.avi"))
+    videos = glob(args.i if args.i.endswith(".avi") else path.join(args.i, "*.avi"))
     toc("Found %d video(s) in {:6f} seconds." % len(videos))
 
     with torch.no_grad():
