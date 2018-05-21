@@ -162,8 +162,11 @@ def video():
             time_depth = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
             if args.type == "video":
-                width = 2 * int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-                height = 2 * int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+                height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                if not args.no_upscale:
+                    width *= 2
+                    height *= 2
                 fps = cap.get(cv2.CAP_PROP_FPS) if args.fps is None else args.fps
                 video_out = cv2.VideoWriter(filepath, cv2.VideoWriter_fourcc(*"XVID"), fps, (width, height))
 
