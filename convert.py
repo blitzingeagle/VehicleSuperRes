@@ -63,8 +63,24 @@ upscale_model = nn.Sequential(
     nn.ConvTranspose2d(256, 3, (4, 4), (2, 2), (1, 1), (0, 0), bias=False),
     nn.Sigmoid()
 ).to(device)
-
 upscale_model.eval()
+
+redux_model = nn.Sequential(
+    nn.Conv2d(3, 32, (3, 3), padding=(1, 1)),
+    nn.LeakyReLU(0.1),
+    nn.Conv2d(32, 32, (3, 3), padding=(1, 1)),
+    nn.LeakyReLU(0.1),
+    nn.Conv2d(32, 64, (3, 3), padding=(1, 1)),
+    nn.LeakyReLU(0.1),
+    nn.Conv2d(64, 64, (3, 3), padding=(1, 1)),
+    nn.LeakyReLU(0.1),
+    nn.Conv2d(64, 128, (3, 3), padding=(1, 1)),
+    nn.LeakyReLU(0.1),
+    nn.Conv2d(128, 128, (3, 3), padding=(1, 1)),
+    nn.LeakyReLU(0.1),
+    nn.Conv2d(128, 3, (3, 3), padding=(1, 1))
+).to(device)
+redux_model.eval()
 
 
 # Time logging functions
