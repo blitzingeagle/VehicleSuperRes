@@ -97,8 +97,10 @@ def toc(log):
 def image():
     # Load weights
     tic()
-    weights = torch.load(args.w)
-    upscale_model.load_state_dict(weights)
+    upscale_weights = torch.load(args.w)
+    upscale_model.load_state_dict(upscale_weights)
+    redux_weights = torch.load("noise%d_model.pth" % args.noise_level)
+    redux_model.load_state_dict(redux_weights)
     toc("Loaded weights in {:6f} seconds.")
 
     # Load inputs
@@ -149,8 +151,10 @@ def image():
 def video():
     # Load weights
     tic()
-    weights = torch.load(args.w)
-    upscale_model.load_state_dict(weights)
+    upscale_weights = torch.load(args.w)
+    upscale_model.load_state_dict(upscale_weights)
+    redux_weights = torch.load("noise%d_model.pth" % args.noise_level)
+    redux_model.load_state_dict(redux_weights)
     toc("Loaded weights in {:6f} seconds.")
 
     # Load inputs
@@ -224,7 +228,6 @@ def video():
                 os.chdir(pwd)
             elif args.type == "video":
                 video_out.release()
-
 
 
 
