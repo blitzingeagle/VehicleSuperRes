@@ -56,7 +56,7 @@ model.load_state_dict(weights)
 
 model.eval()
 
-img_in = cv2.imread("images/street/28.jpg")
+img_in = cv2.imread("output/street/28.jpg")
 cv2.imshow("img_in", img_in)
 
 
@@ -68,7 +68,7 @@ output = model(input)
 img_out = output_to_img(output)[:,:,::-1]
 cv2.imshow("img_out", img_out)
 
-cv2.imwrite("test_out.png", img_out * 255)
+# cv2.imwrite("test_out.png", img_out * 255)
 
 cv2.waitKey()
 cv2.destroyAllWindows()

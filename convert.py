@@ -78,7 +78,8 @@ redux_model = nn.Sequential(
     nn.LeakyReLU(0.1),
     nn.Conv2d(128, 128, (3, 3), padding=(1, 1)),
     nn.LeakyReLU(0.1),
-    nn.Conv2d(128, 3, (3, 3), padding=(1, 1))
+    nn.Conv2d(128, 3, (3, 3), padding=(1, 1)),
+    nn.Hardtanh(min_val=0)
 ).to(device)
 redux_model.eval()
 
@@ -115,7 +116,25 @@ def image():
             tic()
             input = x[0].cuda()
             output = input if args.no_upscale else upscale_model(input)
+
+            # img1 = output.permute(0, 2, 3, 1).cpu().numpy()
+            # img1 = img1.reshape(img1.shape[1:])
+            # img1 = img1[:, :, ::-1]
+            # cv2.imshow("before", img1)
+
             output = redux_model(output)
+
+            # img2 = output.permute(0, 2, 3, 1).cpu().numpy()
+            # img2 = img2.reshape(img2.shape[1:])
+            # img2 = img2[:, :, ::-1]
+            # cv2.imshow("after", img2)
+            #
+            # print(min(img2.reshape(img2.shape[0] * img2.shape[1] * img2.shape[2])))
+            # print(max(img2.reshape(img2.shape[0] * img2.shape[1] * img2.shape[2])))
+            #
+            # cv2.waitKey()
+            # cv2.destroyAllWindows()
+
             if args.verbose: print("{}:\t{} {} --> {} {}".format(idx, dataset.samples[idx][0], tuple(input.shape), filepath, tuple(output.shape)))
             toc("Conversion time: {:06f} seconds.")
 
@@ -184,7 +203,7 @@ def video():
                     input = np.swapaxes(np.swapaxes(np.array(input, dtype=float), 0, 2), 1, 2) / 255.0
                     input = torch.from_numpy(input.reshape((1,) + input.shape)).float().cuda()
                     output = input if args.no_upscale else upscale_model(input)
-                    output = redux_model(output)
+                    # output = redux_model(output)
                     if args.verbose:
                         if args.type == "image":
                             print("{0}/{1}:\t{2} {3} --> {4} {5}".format(idx, time_depth, video, tuple(input.shape), filepath, tuple(output.shape)))
