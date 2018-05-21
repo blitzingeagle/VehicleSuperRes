@@ -18,21 +18,23 @@ subparsers = parser.add_subparsers(help="commands")
 image_parser = subparsers.add_parser("image", help="Convert Image")
 image_parser.add_argument("-i", type=str, default="./images", metavar="INPUT", help="Input image batch directory (default: ./images)")
 image_parser.add_argument("-o", type=str, default="./output", metavar="OUTPUT", help="Output image directory (default: ./output)")
-image_parser.add_argument("-v", "--verbose", action="store_true")
 image_parser.add_argument("-w", type=str, default="weights.pth", metavar="WEIGHTS", help="Path to weights file (default: weights-beta.pth)")
 image_parser.add_argument("--ext", type=str, default="(keep)", metavar="ext", help="File extension for output (default: <uses the same extension as input>)")
 image_parser.add_argument("-fps", type=float, default=30.0, metavar="FPS", help="Frame per second for video output (default: 30 FPS)")
+image_parser.add_argument("--noise-level", type=int, default=0, metavar="NOISE_LEVEL")
+image_parser.add_argument("-v", "--verbose", action="store_true")
 image_parser.add_argument("--no-upscale", action="store_true")
 image_parser.set_defaults(which="image")
 
 video_parser = subparsers.add_parser("video", help="Convert Video")
 video_parser.add_argument("-i", type=str, default="./videos", metavar="INPUT", help="Input video directory (default: ./videos)")
 video_parser.add_argument("-o", type=str, default="./frames", metavar="OUTPUT", help="Output image directory (default: ./frames)")
-video_parser.add_argument("-v", "--verbose", action="store_true")
 video_parser.add_argument("-w", type=str, default="weights.pth", metavar="WEIGHTS", help="Path to weights file (default: weights-beta.pth)")
 video_parser.add_argument("--ext", type=str, default="jpg", metavar="ext", help="File extension for output (default: <uses the same extension as input>)")
 video_parser.add_argument("-fps", type=float, default=None, metavar="FPS", help="Frame per second for video output (default: <uses the same as input>)")
+video_parser.add_argument("--noise-level", type=int, default=0, metavar="NOISE_LEVEL")
 video_parser.add_argument("--no-upscale", action="store_true")
+video_parser.add_argument("-v", "--verbose", action="store_true")
 video_parser.set_defaults(which="video")
 
 
@@ -216,6 +218,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
     args.ext = args.ext.replace('.', '')
     args.type = "image" if args.ext.lower() in image_ext else "video" if args.ext.lower() in video_ext else None
+
+    if args.noise_level < 0 or args.noise_level > 3:
+        print("Bad noise level. Must be an integer between 0 and 3.")
+        exit(0)
 
     if args.which is "image":
         if args.ext == "(keep)": args.type = "image"

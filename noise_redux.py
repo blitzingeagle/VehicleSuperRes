@@ -56,7 +56,7 @@ model.load_state_dict(weights)
 
 model.eval()
 
-img_in = cv2.imread("input_0010.bmp")
+img_in = cv2.imread("images/street/28.jpg")
 cv2.imshow("img_in", img_in)
 
 
