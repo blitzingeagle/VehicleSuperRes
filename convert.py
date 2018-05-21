@@ -27,7 +27,7 @@ image_parser.add_argument("--no-upscale", action="store_true")
 image_parser.set_defaults(which="image")
 
 video_parser = subparsers.add_parser("video", help="Convert Video")
-video_parser.add_argument("-i", type=str, default="./videos", metavar="INPUT", help="Input video directory (default: ./videos)")
+video_parser.add_argument("-i", type=str, default="./videos/input.avi", metavar="INPUT", help="Input video (default: ./videos/input.avi)")
 video_parser.add_argument("-o", type=str, default="./frames", metavar="OUTPUT", help="Output image directory (default: ./frames)")
 video_parser.add_argument("-w", type=str, default="weights.pth", metavar="WEIGHTS", help="Path to weights file (default: weights-beta.pth)")
 video_parser.add_argument("--ext", type=str, default="jpg", metavar="ext", help="File extension for output (default: <uses the same extension as input>)")
@@ -163,11 +163,8 @@ def image():
 def video():
     # Load inputs
     tic()
-    if args.i.endswith(".avi"):
-        videos = glob(args.i if args.i.endswith(".avi") else path.join(args.i, "*.avi"))
-        args.i = path.dirname(args.i)
-    else:
-        videos = glob(path.join(args.i, "*.avi"))
+    videos = glob(args.i)
+    args.i = path.dirname(args.i)
     toc("Found %d video(s) in {:6f} seconds." % len(videos))
 
     with torch.no_grad():
