@@ -181,6 +181,7 @@ def video():
                     input = np.swapaxes(np.swapaxes(np.array(input, dtype=float), 0, 2), 1, 2) / 255.0
                     input = torch.from_numpy(input.reshape((1,) + input.shape)).float().cuda()
                     output = input if args.no_upscale else upscale_model(input)
+                    output = redux_model(output)
                     if args.verbose:
                         if args.type == "image":
                             print("{0}/{1}:\t{2} {3} --> {4} {5}".format(idx, time_depth, video, tuple(input.shape), filepath, tuple(output.shape)))
